@@ -2,22 +2,40 @@ package sample;
 
 public class Position {
 
-	double lat,lon;
-	public Position(double lat,double lon) {
+	float lat,lon;
+	public Position(float lat,float lon) {
 		this.lat=lat;
 		this.lon=lon;
 	}
 	
-	public double getLat() {
+	public float getLat() {
 		return lat;
 	}
 	
 	
-	public double getLon() {
+	public float getLon() {
 		return lon;
 	}
 	
-	public boolean equals(Position p) {
-		return this.lat==p.getLat() && this.lon==p.getLon();
+	 @Override
+    public int hashCode() {
+        return Math.round(lat*lon+lon*6);
+    }
+	 
+	@Override
+	public boolean equals(Object p) {
+		 if (p instanceof Position) {
+			 Position pos=(Position)p;
+			 return this.lat==pos.getLat() && this.lon==pos.getLon();
+		 }
+		 else return false;
+	}
+	
+	public boolean estDansLaZone(float latR,float lonR) {
+		return lat<=latR+2.0f && lat>=latR-2.0f && lon<=lonR+2.0f  && lon>=lonR-2.0f;
+	}
+	
+	public String toString() {
+		return "Position: lat: "+lat+", lon: "+lon;
 	}
 }

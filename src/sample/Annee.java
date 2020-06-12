@@ -1,8 +1,8 @@
 package sample;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public class Annee extends HashMap<Position,Double> {
+public class Annee extends LinkedHashMap<Position,Float> {
 
 	int annee;
 	

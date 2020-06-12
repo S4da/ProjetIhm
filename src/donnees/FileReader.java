@@ -21,8 +21,8 @@ public class FileReader
         String separator = ",";
         
         //Document data
-        double lat;
-        double lon;    
+        float lat;
+        float lon;    
         
        
         try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(csvFilePath), StandardCharsets.ISO_8859_1)) 
@@ -39,23 +39,31 @@ public class FileReader
             	try {
 	            	data = line.split(separator, -1);
 	            	
-	            	lat = Double.parseDouble(data[0]);
-	            	lon = Double.parseDouble(data[1]);
+	            	lat = Float.parseFloat(data[0]);
+	            	lon = Float.parseFloat(data[1]);
 	            	int annee=1880;
-	            	double temp=0;
+	            	float temp=0;
 	            	for (int j=2;j<data.length;j++) {
 	            		annee=1880+j-2;
 	            		Annee anneeR=resultat.get(annee);	      
 	            		if (anneeR!=null) {
 	            			if (!data[j].equals("NA")) {
-	            				temp=Double.parseDouble(data[j]);
+	            				temp=Float.parseFloat(data[j]);
 		            			anneeR.put(new Position(lat,lon), temp);
+	            			}
+	            			else {
+	            				temp=Float.NaN;
+	            				anneeR.put(new Position(lat,lon), temp);
 	            			}
 	            		}else {
 	            			anneeR=new Annee(annee);
 	            			if (!data[j].equals("NA")) {
-	            				temp=Double.parseDouble(data[j]);
+	            				temp=Float.parseFloat(data[j]);
 		            			anneeR.put(new Position(lat,lon), temp);
+	            			}
+	            			else {
+	            				temp=Float.NaN;
+	            				anneeR.put(new Position(lat,lon), temp);
 	            			}
 	            			resultat.put(annee,anneeR);
 	            		}
