@@ -1,6 +1,236 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" />
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="972.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <HBox layoutX="-4.0" layoutY="-4.0" prefHeight="696.0" prefWidth="980.0">
+         <children>
+            <VBox prefHeight="696.0" prefWidth="224.0">
+               <children>
+                  <Label text="VISUALISATION" textAlignment="CENTER" underline="true">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="35.0" top="50.0" />
+                     </VBox.margin>
+                  </Label>
+                  <RadioButton fx:id="btnRadioQuadri" mnemonicParsing="false" text="Quadrilatere">
+                     <VBox.margin>
+                        <Insets left="35.0" top="10.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="visu" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="btnRadioHisto" mnemonicParsing="false" text="Histogramme" toggleGroup="$visu">
+                     <VBox.margin>
+                        <Insets left="35.0" top="10.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </RadioButton>
+                  <Button fx:id="btnGraphe" mnemonicParsing="false" text="Afficher Graphique">
+                     <VBox.margin>
+                        <Insets left="50.0" top="50.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Pane fx:id="paneGraphe" prefHeight="196.0" prefWidth="230.0">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Pane>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox prefHeight="696.0" prefWidth="728.0">
+               <children>
+                  <HBox prefHeight="84.0" prefWidth="727.0">
+                     <children>
+                        <TextField fx:id="txtFieldAnnee" prefHeight="25.0" prefWidth="66.0">
+                           <HBox.margin>
+                              <Insets left="10.0" top="30.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Slider fx:id="slidAnnee" max="2020.0" min="1880.0" prefHeight="38.0" prefWidth="452.0" showTickLabels="true" showTickMarks="true">
+                           <HBox.margin>
+                              <Insets left="10.0" top="30.0" />
+                           </HBox.margin>
+                        </Slider>
+                        <Button fx:id="btnPlay" mnemonicParsing="false" text="Play">
+                           <HBox.margin>
+                              <Insets left="10.0" top="30.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnPause" mnemonicParsing="false" text="Pause">
+                           <HBox.margin>
+                              <Insets left="10.0" top="30.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnStop" mnemonicParsing="false" text="Stop">
+                           <HBox.margin>
+                              <Insets left="10.0" top="30.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="39.0" prefWidth="728.0">
+                     <children>
+                        <Pane prefHeight="29.0" prefWidth="548.0" />
+                        <ComboBox fx:id="cmbVitesse" prefWidth="150.0" promptText="Vitesse" />
+                     </children>
+                  </HBox>
+                  <Pane fx:id="paneEarth" prefHeight="576.0" prefWidth="737.0" />
+                  <HBox prefHeight="37.0" prefWidth="727.0">
+                     <children>
+                        <Label text="Latitude :">
+                           <HBox.margin>
+                              <Insets left="20.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label fx:id="latLabel" text="...">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label text="Longitude : ">
+                           <HBox.margin>
+                              <Insets left="20.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label fx:id="lonLabel" text="...">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="696.0" prefWidth="75.0">
+               <children>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <VBox.margin>
+                        <Insets top="400.0" />
+                     </VBox.margin>
+                     <children>
+                        <Label prefHeight="9.0" prefWidth="27.0" text="10">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color8_10" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #800000;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="8">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color6_8" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff0000;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="6">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color4_6" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff6600;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="4">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color2_4" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff5050;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="2">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color0_2" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff9999;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="-2">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color_minus0_2" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #000066;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="-4">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color_minus2_4" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #000099;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="-6">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color_minus4_6" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #0000ff;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="-8">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color_minus6_8" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #3366ff;" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="26.0" prefWidth="58.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="27.0" text="-10">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Pane fx:id="color_minus8_10" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #6699ff;" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children></HBox>
+   </children>
+</Pane>

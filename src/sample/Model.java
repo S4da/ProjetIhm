@@ -1,11 +1,13 @@
 package sample;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import donnees.FileReader;
 
 public class Model {
  
 	HashMap<Integer,Annee> data;
+	int anneeSelectionnee;
 	
 	/** tests */
 	public int sampleNumber;
@@ -56,9 +58,18 @@ public class Model {
 		return data;
 	}
 	
+	public ArrayList<Float> getTempZone(float lat,float lon) {
+		Position p=new Position(lat,lon);
+		ArrayList<Float> anomalies=new ArrayList();
+		for (int annee: data.keySet()) {
+			anomalies.add(data.get(annee).get(p));
+		}
+		return anomalies;
+	}
 	
-	
-	
+	public int getAnneeSelectionnee() {
+		return anneeSelectionnee;
+	}
 	
 	/** tests */
 	public void readTemperatureFile(String path) {
