@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import donnees.FileReader;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.MeshView;
 
 public class Model {
  
 	HashMap<Integer,Annee> data;
+	static HashMap<Position,MeshView> meshs=new HashMap();
+	static HashMap<Position,Cylinder> histo=new HashMap();
+	
 	int anneeSelectionnee=1880;
 	
 	/** tests */
@@ -73,6 +78,20 @@ public class Model {
 		return data.get(anneeSelectionnee);
 	}
 	
+	public void setAnneeSelectionnee(int annee) {
+		anneeSelectionnee=annee;
+	}
+	
+	public int getAnneeEnCours() {
+		return anneeSelectionnee;
+	}
+	
+	public HashMap<Position,MeshView> getMeshs(){
+		return meshs;
+	}
+	public HashMap<Position,Cylinder> getHisto(){
+		return histo;
+	}
 	/** tests */
 	public void readTemperatureFile(String path) {
 		FileReader.getDataFromCSVFile("src/donnees/tempanomaly_4x4grid.csv", data);

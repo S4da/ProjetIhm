@@ -1,10 +1,15 @@
 package sample;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.function.UnaryOperator;
 
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -20,6 +25,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -103,13 +113,109 @@ public class Controller {
     Rectangle color_minus8_10;
     
     Group quadri;
+    Group histo;
     Group root3D;
+    UnaryOperator filter;
+    
+    public void initFormatter() {
+  	  filter = new UnaryOperator<TextFormatter.Change>() {
+  	  @Override
+  	  public TextFormatter.Change apply(TextFormatter.Change t) {
+  	    String text = t.getControlText() + t.getText();
+  	      if (!t.isReplaced())
+  	        if (!text.matches("^[-+]?[0-9]*[.]?[0-9]*([eE]?[-+]*[0-9]*)?$"))
+  	          t.setText("");
+  	          return t;
+  	        }
+  	      };
+    }
     
 	public void initialize() {
 		   
 			model=new Model();
+			initFormatter();
 			txtFieldAnnee.setText((int)slidAnnee.getValue()+"");
+		    txtFieldAnnee.setTextFormatter(new TextFormatter(filter));
 		    
+		    txtFieldAnnee.setOnKeyReleased(new EventHandler<KeyEvent>() {
+	              @Override
+	              public void handle(KeyEvent e) {
+	                  //TODO
+	            	  if (!e.getCode().equals(KeyCode.BACK_SPACE)) {
+		            	  int annee=0;
+		            	  try {
+		            		  annee= Integer.parseInt(txtFieldAnnee.getText());
+		            	  }catch(Exception er) {
+		            		  annee=1880;
+		            	  }
+		            	  if (annee<1880) {
+		            		  annee=1880;
+		            	  }
+		            	  else if(annee>2020) {
+		            		  annee=2020;
+		            	  }
+		            	  model.setAnneeSelectionnee(annee);
+		            	  slidAnnee.setValue(annee);
+		            	  txtFieldAnnee.end();
+		            	  if (btnRadioQuadri.isSelected()) afficherQuadri();
+		            	  else if (btnRadioHisto.isSelected()) {
+		            		  afficherHisto();
+		            	  }
+	            	  }
+	              }
+	          });
+		   
+		    txtFieldAnnee.focusedProperty().addListener(new ChangeListener<Boolean>()
+		    {
+		        @Override
+		        public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+		        {
+		            if (!newPropertyValue)
+		            {
+		            	txtFieldAnnee.setText(model.getAnneeEnCours()+"");
+		            }
+		    
+		        }
+		    });
+		    
+		    ToggleGroup toggle=btnRadioQuadri.getToggleGroup();
+			
+			// on ajoute un listener pour tous les radioButton liés entre eux (tous)
+			toggle.selectedToggleProperty().addListener(new ChangeListener<Toggle>()  
+	        { 
+	            public void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) 
+	            { 
+	                RadioButton rb = (RadioButton)toggle.getSelectedToggle(); 
+	                if (rb != null) { 
+	                    String s = rb.getText();
+	                    if (s.equals("Quadrilatere")) {
+	                    	root3D.getChildren().add(quadri);
+	                    	root3D.getChildren().remove(histo);
+	                    	afficherQuadri();
+	                    }
+	                    else {
+	                    	root3D.getChildren().remove(quadri);
+	                    	root3D.getChildren().add(histo);
+	                    	afficherHisto();
+	                    }
+	                } 
+	            } 
+	        });
+		    
+		    slidAnnee.valueProperty().addListener(new ChangeListener<Number>() {
+	            public void changed(ObservableValue<? extends Number> ov,
+	                Number old_val, Number new_val) {
+	            	
+	            	 model.setAnneeSelectionnee(new_val.intValue());
+	            	 txtFieldAnnee.setText(new_val.intValue()+"");
+	            	 if (btnRadioQuadri.isSelected()) afficherQuadri();
+	            	  else if (btnRadioHisto.isSelected()) {
+	            		  	afficherHisto();
+	            	  }
+	            }
+	        });
+	          
+	          
 			// tracer la terre de base
 			root3D = new Group();
 	        ObjModelImporter objImporter =new ObjModelImporter();
@@ -128,7 +234,6 @@ public class Controller {
 
 	        // Add point light
 	        PointLight light = new PointLight(Color.WHITE);
-	        int pas=1000;
 	        light.setTranslateX(-180);
 	        light.setTranslateY(-90);
 	        light.setTranslateZ(-120);
@@ -141,8 +246,9 @@ public class Controller {
 	        root3D.getChildren().add(ambientLight);
 	        
 	        quadri=new Group();
-	        tracerQuadri(quadri);
-	        afficherQuadri();
+	        histo=new Group();
+	        tracerQuadri();
+	        
 	        //root3D.getChildren().add(quadri);
 	        
 	        SubScene subscene = new SubScene(root3D,600,600,true,SceneAntialiasing.BALANCED);
@@ -192,19 +298,21 @@ public class Controller {
     	
     	MeshView meshView = new MeshView(triangleMesh);
     	meshView.setMaterial(material);
-    	p.setMeshView(meshView);
-    	parent.getChildren().addAll(meshView);
+    	
+    	HashMap<Position,MeshView> meshs=model.getMeshs();
+    	meshs.put(p,meshView);
+    	
+    	parent.getChildren().add(meshView);
     	
     }
     
-    public void tracerQuadri(Group root) {
+    public void tracerQuadri() {
     	Annee annee=model.getAnneeSelectionnee();
     	if (annee!=null) {
 	        double pas=4;
 	        for (int i=-88;i<=90;i+=pas) {
 	        	for (int j=-178;j<=180;j+=pas) {
-	        		Position p=new Position(i,j);
-	        		
+	        		Position p=new Position(i,j);       		
 	        		Float temp=annee.get(p);
 	        		if (temp!=null) {
 		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j,1.2f);
@@ -216,23 +324,22 @@ public class Controller {
 			        	pm.setSpecularColor(Color.GREY);
 
 		    	        //pm.setSpecularColor(null);
-		    	        addQuadrilateral(root,topRight,botRight,topLeft,botLeft,pm,p);
+		    	        addQuadrilateral(quadri,topRight,botRight,topLeft,botLeft,pm,p);
 	        		}
 	        	}
 	        }
     	}
-    	root3D.getChildren().remove(quadri);
     }
     
     public void afficherQuadri() {
-    	root3D.getChildren().add(quadri);
+    	
     	Annee annee=model.getAnneeSelectionnee();
-    	float alpha=0.1f;
+    	float alpha=0.7f;
     	if (annee!=null) {
 	        for (Position p: annee.keySet()) {
 	        		if (annee.get(p)!=null) {
 	        			
-		        		MeshView mesh=p.getMeshView();
+		        		MeshView mesh=model.getMeshs().get(p);
 		        		PhongMaterial pm=new PhongMaterial();
 		        		Float temp=annee.get(p);
 		        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
@@ -273,12 +380,14 @@ public class Controller {
 		    	    
 		    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
 		        	    pm.setSpecularColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
+		        	    mesh.setMaterial(pm);
 	        		}
 	        	}
 	        }
     	}
     
-    /*
+   
+    
      // From Rahel LÃ¼thy : https://netzwerg.ch/blog/2015/03/22/javafx-3d-line/
     public Cylinder createLine(Point3D origin, Point3D target) {
         Point3D yAxis = new Point3D(0, 1, 0);
@@ -299,6 +408,70 @@ public class Controller {
         return line;
     }
     
+	 public void afficherHisto() {
+	    	histo=new Group();
+	    	Annee annee=model.getAnneeSelectionnee();
+	    	float alpha=0.7f;
+	    	float minTemp=Math.abs(model.getMinTemp());
+	    	float taille=0;
+	    	if (annee!=null) {
+		        for (Position p: annee.keySet()) {
+		        		if (annee.get(p)!=null) {
+		        			
+		        			Point3D origin=geoCoordTo3dCoord(p.getLat(),p.getLon(),1);
+		        			Point3D target=geoCoordTo3dCoord(p.getLat(),p.getLon(),taille);
+		        			
+			        		Cylinder cylinder=createLine(origin,target);
+			        		PhongMaterial pm=new PhongMaterial();
+			        		Float temp=annee.get(p);
+			        		taille=((minTemp+temp)/minTemp)+0.2f;
+			        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
+			    	        if (temp==Float.NaN) {
+				        	    pm.setDiffuseColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha));
+				        	    pm.setSpecularColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha)); 
+			    	        }
+			    	        else if (temp>8){
+			    	        	color=(Color)color10_8.getFill();
+			    	        }
+			    	        else if (temp>6){
+			    	        	color=(Color)color8_6.getFill();
+			    	        }
+			    	        else if (temp>4){
+			    	        	color=(Color)color6_4.getFill();
+			    	        }
+			    	        else if (temp>2){
+			    	        	color=(Color)color4_2.getFill();
+			    	        }
+			    	        else if (temp>0){
+			    	        	color=(Color)color2_0.getFill();
+			    	        }
+			    	        else if (temp>-2){
+			    	        	color=(Color)color_minus0_2.getFill();
+			    	        }
+			    	        else if (temp>-4){
+			    	        	color=(Color)color_minus2_4.getFill();
+			    	        }
+			    	        else if (temp>-6){
+			    	        	color=(Color)color_minus4_6.getFill();
+			    	        }
+			    	        else if (temp>-8){
+			    	        	color=(Color)color_minus6_8.getFill();
+			    	        }
+			    	        else if (temp>-10){
+			    	        	color=(Color)color_minus8_10.getFill();
+			    	        }
+			    	    
+			    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
+			        	    pm.setSpecularColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
+			        	    cylinder.setMaterial(pm);
+			        	    histo.getChildren().add(cylinder);
+		        		}
+		        	}
+		        }
+	    		root3D.getChildren().add(histo);
+	    	}
+    
+    /*
     public void displayTown(Group parent, String name, double lat, double lon) {
     	Sphere sphere=new Sphere(0.01);
     	sphere.setId(name);

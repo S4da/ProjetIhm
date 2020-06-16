@@ -5,7 +5,6 @@ import javafx.scene.shape.MeshView;
 public class Position {
 
 	float lat,lon;
-	MeshView meshview;
 	
 	public Position(float lat,float lon) {
 		this.lat=lat;
@@ -43,11 +42,4 @@ public class Position {
 		return "Position: lat: "+lat+", lon: "+lon;
 	}
 	
-	public void setMeshView(MeshView m) {
-		meshview=m;
-	}
-	
-	public MeshView getMeshView() {
-		return meshview;
-	}
 }
