@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="972.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
@@ -136,7 +137,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color8_10" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #800000;" />
+                        <Rectangle fx:id="color10_8" arcHeight="5.0" arcWidth="5.0" fill="MAROON" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -146,7 +147,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color6_8" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff0000;" />
+                        <Rectangle fx:id="color8_6" arcHeight="5.0" arcWidth="5.0" fill="RED" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -156,7 +157,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color4_6" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff6600;" />
+                        <Rectangle fx:id="color6_4" arcHeight="5.0" arcWidth="5.0" fill="#ff6600" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -166,7 +167,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color2_4" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff5050;" />
+                        <Rectangle fx:id="color4_2" arcHeight="5.0" arcWidth="5.0" fill="#ff5050" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -176,7 +177,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color0_2" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: ff9999;" />
+                        <Rectangle fx:id="color2_0" arcHeight="5.0" arcWidth="5.0" fill="#f89393" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -186,7 +187,7 @@
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color_minus0_2" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #000066;" />
+                        <Rectangle fx:id="color_minus0_2" arcHeight="5.0" arcWidth="5.0" fill="#6e92f5" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -196,7 +197,7 @@
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color_minus2_4" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #000099;" />
+                        <Rectangle fx:id="color_minus2_4" arcHeight="5.0" arcWidth="5.0" fill="#3366ff" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -206,7 +207,7 @@
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color_minus4_6" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #0000ff;" />
+                        <Rectangle fx:id="color_minus4_6" arcHeight="5.0" arcWidth="5.0" fill="BLUE" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -216,7 +217,7 @@
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color_minus6_8" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #3366ff;" />
+                        <Rectangle fx:id="color_minus6_8" arcHeight="5.0" arcWidth="5.0" fill="#000099" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -226,7 +227,7 @@
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
-                        <Pane fx:id="color_minus8_10" prefHeight="15.0" prefWidth="20.0" style="-fx-background-color: #6699ff;" />
+                        <Rectangle fx:id="color_minus8_10" arcHeight="5.0" arcWidth="5.0" fill="#000066" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                </children>

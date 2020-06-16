@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
@@ -24,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
@@ -36,6 +38,7 @@ public class Controller {
 	private static final float TEXTURE_LAT_OFFSET = -0.2f;
     private static final float TEXTURE_LON_OFFSET = 2.8f;
     
+    private Model model;
     @FXML
     Pane paneEarth;
     
@@ -50,9 +53,6 @@ public class Controller {
     
     @FXML
     Pane paneGraphe;
-    
-    @FXML
-    Pane color10_8;
     
     @FXML
     TextField txtFieldAnnee;
@@ -73,38 +73,45 @@ public class Controller {
     ComboBox cmbVitesse;
     
     @FXML
-    Pane color8_6;
+    Rectangle color10_8;
     
     @FXML
-    Pane color6_4;
+    Rectangle color8_6;
     
     @FXML
-    Pane color4_2;
+    Rectangle color6_4;
     
     @FXML
-    Pane color2_0;
+    Rectangle color4_2;
+    
+    @FXML
+    Rectangle color2_0;
      
     @FXML
-    Pane color_minus0_2;
+    Rectangle color_minus0_2;
     
     @FXML
-    Pane color_minus2_4;
+    Rectangle color_minus2_4;
     
     @FXML
-    Pane color_minus4_6;
+    Rectangle color_minus4_6;
     
     @FXML
-    Pane color_minus6_8;
+    Rectangle color_minus6_8;
     
     @FXML
-    Pane color_minus8_10;
+    Rectangle color_minus8_10;
+    
+    Group quadri;
+    Group root3D;
     
 	public void initialize() {
 		   
+			model=new Model();
 			txtFieldAnnee.setText((int)slidAnnee.getValue()+"");
-		       
+		    
 			// tracer la terre de base
-			Group root3D = new Group();
+			root3D = new Group();
 	        ObjModelImporter objImporter =new ObjModelImporter();
 	        try {
 	        	URL modeUrl= this.getClass().getResource("Earth/earth.obj");
@@ -121,16 +128,22 @@ public class Controller {
 
 	        // Add point light
 	        PointLight light = new PointLight(Color.WHITE);
+	        int pas=1000;
 	        light.setTranslateX(-180);
 	        light.setTranslateY(-90);
 	        light.setTranslateZ(-120);
 	        light.getScope().addAll(root3D);
-	        root3D.getChildren().add(light);
+	        //root3D.getChildren().add(light);
 
 	        // Add ambient light
 	        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
 	        ambientLight.getScope().addAll(root3D);
 	        root3D.getChildren().add(ambientLight);
+	        
+	        quadri=new Group();
+	        tracerQuadri(quadri);
+	        afficherQuadri();
+	        //root3D.getChildren().add(quadri);
 	        
 	        SubScene subscene = new SubScene(root3D,600,600,true,SceneAntialiasing.BALANCED);
 	        CameraManager camMan=new CameraManager(camera,paneEarth,root3D);
@@ -151,7 +164,7 @@ public class Controller {
     }
     
     
-    public void addQuadrilateral(Group parent,Point3D topRight,Point3D bottomRight,Point3D topLeft,Point3D bottomLeft,PhongMaterial material) {
+    public void addQuadrilateral(Group parent,Point3D topRight,Point3D bottomRight,Point3D topLeft,Point3D bottomLeft,PhongMaterial material,Position p) {
     	final TriangleMesh triangleMesh = new TriangleMesh();
     	
     	final float[] points = {
@@ -177,30 +190,94 @@ public class Controller {
     	triangleMesh.getTexCoords().setAll(texCoords);
     	triangleMesh.getFaces().setAll(faces);
     	
-    	final MeshView meshView = new MeshView(triangleMesh);
+    	MeshView meshView = new MeshView(triangleMesh);
     	meshView.setMaterial(material);
+    	p.setMeshView(meshView);
     	parent.getChildren().addAll(meshView);
     	
     }
     
     public void tracerQuadri(Group root) {
-    	int base=0;
-        double pas=4;
-        
-        for (int i=-90;i<90;i+=pas) {
-        	for (int j=-180;j<180;j+=pas) {
-        		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j,1.2f);
-        	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,1.2f);
-        	        Point3D botLeft=geoCoordTo3dCoord(i,j,1.2f);
-        	        Point3D botRight=geoCoordTo3dCoord(i,j+pas,1.2f);
-        	        PhongMaterial pm=new PhongMaterial();
-        	    	pm.setDiffuseColor(Color.rgb(0, 255, 0, 0.1));
-        	    	pm.setSpecularColor(Color.rgb(0, 255, 0, 0.1));
-        	        addQuadrilateral(root,topRight,botRight,topLeft,botLeft,pm);
-        	}
-      
-        }
+    	Annee annee=model.getAnneeSelectionnee();
+    	if (annee!=null) {
+	        double pas=4;
+	        for (int i=-88;i<=90;i+=pas) {
+	        	for (int j=-178;j<=180;j+=pas) {
+	        		Position p=new Position(i,j);
+	        		
+	        		Float temp=annee.get(p);
+	        		if (temp!=null) {
+		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j,1.2f);
+		    	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,1.2f);
+		    	        Point3D botLeft=geoCoordTo3dCoord(i,j,1.2f);
+		    	        Point3D botRight=geoCoordTo3dCoord(i,j+pas,1.2f);
+		    	        PhongMaterial pm=new PhongMaterial();
+		    	      	pm.setDiffuseColor(Color.GREY);
+			        	pm.setSpecularColor(Color.GREY);
+
+		    	        //pm.setSpecularColor(null);
+		    	        addQuadrilateral(root,topRight,botRight,topLeft,botLeft,pm,p);
+	        		}
+	        	}
+	        }
+    	}
+    	root3D.getChildren().remove(quadri);
     }
+    
+    public void afficherQuadri() {
+    	root3D.getChildren().add(quadri);
+    	Annee annee=model.getAnneeSelectionnee();
+    	float alpha=0.1f;
+    	if (annee!=null) {
+	        for (Position p: annee.keySet()) {
+	        		if (annee.get(p)!=null) {
+	        			
+		        		MeshView mesh=p.getMeshView();
+		        		PhongMaterial pm=new PhongMaterial();
+		        		Float temp=annee.get(p);
+		        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
+		    	        if (temp==Float.NaN) {
+			        	    pm.setDiffuseColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha));
+			        	    pm.setSpecularColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha)); 
+		    	        }
+		    	        else if (temp>8){
+		    	        	color=(Color)color10_8.getFill();
+		    	        }
+		    	        else if (temp>6){
+		    	        	color=(Color)color8_6.getFill();
+		    	        }
+		    	        else if (temp>4){
+		    	        	color=(Color)color6_4.getFill();
+		    	        }
+		    	        else if (temp>2){
+		    	        	color=(Color)color4_2.getFill();
+		    	        }
+		    	        else if (temp>0){
+		    	        	color=(Color)color2_0.getFill();
+		    	        }
+		    	        else if (temp>-2){
+		    	        	color=(Color)color_minus0_2.getFill();
+		    	        }
+		    	        else if (temp>-4){
+		    	        	color=(Color)color_minus2_4.getFill();
+		    	        }
+		    	        else if (temp>-6){
+		    	        	color=(Color)color_minus4_6.getFill();
+		    	        }
+		    	        else if (temp>-8){
+		    	        	color=(Color)color_minus6_8.getFill();
+		    	        }
+		    	        else if (temp>-10){
+		    	        	color=(Color)color_minus8_10.getFill();
+		    	        }
+		    	    
+		    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
+		        	    pm.setSpecularColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
+	        		}
+	        	}
+	        }
+    	}
+    
     /*
      // From Rahel Lüthy : https://netzwerg.ch/blog/2015/03/22/javafx-3d-line/
     public Cylinder createLine(Point3D origin, Point3D target) {

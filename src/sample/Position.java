@@ -1,8 +1,12 @@
 package sample;
 
+import javafx.scene.shape.MeshView;
+
 public class Position {
 
 	float lat,lon;
+	MeshView meshview;
+	
 	public Position(float lat,float lon) {
 		this.lat=lat;
 		this.lon=lon;
@@ -37,5 +41,13 @@ public class Position {
 	
 	public String toString() {
 		return "Position: lat: "+lat+", lon: "+lon;
+	}
+	
+	public void setMeshView(MeshView m) {
+		meshview=m;
+	}
+	
+	public MeshView getMeshView() {
+		return meshview;
 	}
 }

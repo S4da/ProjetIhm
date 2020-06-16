@@ -2,12 +2,14 @@ package sample;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import donnees.FileReader;
 
 public class Model {
  
 	HashMap<Integer,Annee> data;
-	int anneeSelectionnee;
+	int anneeSelectionnee=1880;
 	
 	/** tests */
 	public int sampleNumber;
@@ -67,8 +69,8 @@ public class Model {
 		return anomalies;
 	}
 	
-	public int getAnneeSelectionnee() {
-		return anneeSelectionnee;
+	public Annee getAnneeSelectionnee() {
+		return data.get(anneeSelectionnee);
 	}
 	
 	/** tests */
