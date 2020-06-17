@@ -504,6 +504,7 @@ public class Controller {
 			        		PhongMaterial pm=new PhongMaterial();
 			        		Float temp=annee.get(p);
 			        		taille=((minTemp+temp)/minTemp)-pasTaille;
+			        		taille=(float) Math.round(taille * 100) / 100;
 			        		cylinder.setHeight(taille);
 			        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
 			    	        if (temp==Float.NaN) {
