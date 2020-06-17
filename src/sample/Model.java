@@ -10,9 +10,11 @@ import javafx.scene.shape.MeshView;
 
 public class Model {
  
-	HashMap<Integer,Annee> data;
-	static HashMap<Position,MeshView> meshs=new HashMap();
-	static HashMap<Position,Cylinder> histo=new HashMap();
+	LinkedHashMap<Integer,Annee> data;
+	HashMap<Position,MeshView> meshs=new HashMap();
+	HashMap<Position,Cylinder> histo=new HashMap();
+
+	Position selecPos;
 	
 	int anneeSelectionnee=1880;
 	
@@ -23,7 +25,8 @@ public class Model {
 	/** */
 	
 	public Model() {
-		data =new HashMap();
+		data =new LinkedHashMap();
+		selecPos=null;
     	//FileReader.getDataFromCSVFile("src/donnees/tempanomaly_4x4grid.csv", data);
 		readTemperatureFile("src/donnees/tempanomaly_4x4grid.csv");
 		sampleNumber=data.size();
@@ -61,7 +64,7 @@ public class Model {
 		return Float.NaN;
 	}
 	
-	public HashMap<Integer,Annee> getData(){
+	public LinkedHashMap<Integer,Annee> getData(){
 		return data;
 	}
 	
@@ -92,6 +95,15 @@ public class Model {
 	public HashMap<Position,Cylinder> getHisto(){
 		return histo;
 	}
+	
+	public Position getSelecPos() {
+		System.out.println(selecPos);
+		return selecPos;
+	}
+	public void setSelecPos(Position selecPos) {
+		this.selecPos = selecPos;
+	}
+
 	/** tests */
 	public void readTemperatureFile(String path) {
 		FileReader.getDataFromCSVFile("src/donnees/tempanomaly_4x4grid.csv", data);

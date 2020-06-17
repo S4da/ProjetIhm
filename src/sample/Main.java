@@ -21,7 +21,7 @@ public class Main extends Application {
     	Parent root = FXMLLoader.load(getClass().getResource("view.fxml"));
 
         primaryStage.setTitle("Projet IHM 2020");
-        primaryStage.setScene(new Scene(root, 972, 690));
+        primaryStage.setScene(new Scene(root, 1110, 690));
         primaryStage.show();
         primaryStage.setResizable(false);
     }

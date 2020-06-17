@@ -2,6 +2,7 @@ package sample;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.function.UnaryOperator;
 
 import com.interactivemesh.jfx.importer.ImportException;
@@ -9,6 +10,7 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
@@ -20,8 +22,14 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -30,6 +38,8 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -62,7 +72,10 @@ public class Controller {
     Button btnGraphe;
     
     @FXML
-    Pane paneGraphe;
+    AnchorPane paneGraphe;
+    
+    @FXML
+    BarChart<String,Float> graphe;
     
     @FXML
     TextField txtFieldAnnee;
@@ -112,11 +125,21 @@ public class Controller {
     @FXML
     Rectangle color_minus8_10;
     
+    @FXML
+    Label latLabel;
+    
+    @FXML
+    Label lonLabel;
+    
     Group quadri;
     Group histo;
     Group root3D;
+    Group latLonLabel;
     UnaryOperator filter;
-    
+    boolean histoAffiche=false;
+    boolean quadriAffiche=false;
+    boolean grapheAffiche=false;
+    XYChart.Series s;
     public void initFormatter() {
   	  filter = new UnaryOperator<TextFormatter.Change>() {
   	  @Override
@@ -136,88 +159,13 @@ public class Controller {
 			initFormatter();
 			txtFieldAnnee.setText((int)slidAnnee.getValue()+"");
 		    txtFieldAnnee.setTextFormatter(new TextFormatter(filter));
-		    
-		    txtFieldAnnee.setOnKeyReleased(new EventHandler<KeyEvent>() {
-	              @Override
-	              public void handle(KeyEvent e) {
-	                  //TODO
-	            	  if (!e.getCode().equals(KeyCode.BACK_SPACE)) {
-		            	  int annee=0;
-		            	  try {
-		            		  annee= Integer.parseInt(txtFieldAnnee.getText());
-		            	  }catch(Exception er) {
-		            		  annee=1880;
-		            	  }
-		            	  if (annee<1880) {
-		            		  annee=1880;
-		            	  }
-		            	  else if(annee>2020) {
-		            		  annee=2020;
-		            	  }
-		            	  model.setAnneeSelectionnee(annee);
-		            	  slidAnnee.setValue(annee);
-		            	  txtFieldAnnee.end();
-		            	  if (btnRadioQuadri.isSelected()) afficherQuadri();
-		            	  else if (btnRadioHisto.isSelected()) {
-		            		  afficherHisto();
-		            	  }
-	            	  }
-	              }
-	          });
+		    btnGraphe.setDisable(true);
+		   graphe.setVisible(false);
 		   
-		    txtFieldAnnee.focusedProperty().addListener(new ChangeListener<Boolean>()
-		    {
-		        @Override
-		        public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
-		        {
-		            if (!newPropertyValue)
-		            {
-		            	txtFieldAnnee.setText(model.getAnneeEnCours()+"");
-		            }
-		    
-		        }
-		    });
-		    
-		    ToggleGroup toggle=btnRadioQuadri.getToggleGroup();
-			
-			// on ajoute un listener pour tous les radioButton liés entre eux (tous)
-			toggle.selectedToggleProperty().addListener(new ChangeListener<Toggle>()  
-	        { 
-	            public void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) 
-	            { 
-	                RadioButton rb = (RadioButton)toggle.getSelectedToggle(); 
-	                if (rb != null) { 
-	                    String s = rb.getText();
-	                    if (s.equals("Quadrilatere")) {
-	                    	root3D.getChildren().add(quadri);
-	                    	root3D.getChildren().remove(histo);
-	                    	afficherQuadri();
-	                    }
-	                    else {
-	                    	root3D.getChildren().remove(quadri);
-	                    	root3D.getChildren().add(histo);
-	                    	afficherHisto();
-	                    }
-	                } 
-	            } 
-	        });
-		    
-		    slidAnnee.valueProperty().addListener(new ChangeListener<Number>() {
-	            public void changed(ObservableValue<? extends Number> ov,
-	                Number old_val, Number new_val) {
-	            	
-	            	 model.setAnneeSelectionnee(new_val.intValue());
-	            	 txtFieldAnnee.setText(new_val.intValue()+"");
-	            	 if (btnRadioQuadri.isSelected()) afficherQuadri();
-	            	  else if (btnRadioHisto.isSelected()) {
-	            		  	afficherHisto();
-	            	  }
-	            }
-	        });
-	          
 	          
 			// tracer la terre de base
 			root3D = new Group();
+			latLonLabel=new Group();
 	        ObjModelImporter objImporter =new ObjModelImporter();
 	        try {
 	        	URL modeUrl= this.getClass().getResource("Earth/earth.obj");
@@ -245,17 +193,97 @@ public class Controller {
 	        ambientLight.getScope().addAll(root3D);
 	        root3D.getChildren().add(ambientLight);
 	        
+	        setLatLonLabel();
+	        
 	        quadri=new Group();
 	        histo=new Group();
 	        tracerQuadri();
-	        
+	        tracerHisto();
 	        //root3D.getChildren().add(quadri);
 	        
 	        SubScene subscene = new SubScene(root3D,600,600,true,SceneAntialiasing.BALANCED);
 	        CameraManager camMan=new CameraManager(camera,paneEarth,root3D);
 	        subscene.setCamera(camera);
 	        paneEarth.getChildren().addAll(subscene);
-	        
+	
+		    
+		    ToggleGroup toggle=btnRadioQuadri.getToggleGroup();
+			
+			// on ajoute un listener pour tous les radioButton liés entre eux (tous)
+			toggle.selectedToggleProperty().addListener(new ChangeListener<Toggle>()  
+	        { 
+	            public void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) 
+	            { 
+	                RadioButton rb = (RadioButton)toggle.getSelectedToggle(); 
+	                if (rb != null) { 
+	                    String s = rb.getText();
+	                    if (s.equals("Quadrilatere")) {
+	                    	afficherQuadri();
+	                    }
+	                    else if (s.equals("Histogramme")) {
+	                    	afficherHisto();
+	                    	
+	                    }
+	                } 
+	            } 
+	        });
+		    
+			
+		    txtFieldAnnee.setOnKeyReleased(new EventHandler<KeyEvent>() {
+	              @Override
+	              public void handle(KeyEvent e) {
+	                  //TODO
+	            	  if (!e.getCode().equals(KeyCode.BACK_SPACE)) {
+		            	  int annee=0;
+		            	  try {
+		            		  annee= Integer.parseInt(txtFieldAnnee.getText());
+		            	  }catch(Exception er) {
+		            		  annee=1880;
+		            	  }
+		            	  if (annee<1880) {
+		            		  annee=1880;
+		            	  }
+		            	  else if(annee>2020) {
+		            		  annee=2020;
+		            	  }
+		            	  model.setAnneeSelectionnee(annee);
+		            	  slidAnnee.setValue(annee);
+		            	  txtFieldAnnee.end();
+		            	  afficherHistoQuadri();
+	            	  }
+	              }
+	          });
+		   
+		    txtFieldAnnee.focusedProperty().addListener(new ChangeListener<Boolean>()
+		    {
+		        @Override
+		        public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+		        {
+		            if (!newPropertyValue)
+		            {
+		            	txtFieldAnnee.setText(model.getAnneeEnCours()+"");
+		            }
+		    
+		        }
+		    });
+		    
+		  
+		    slidAnnee.valueProperty().addListener(new ChangeListener<Number>() {
+	            public void changed(ObservableValue<? extends Number> ov,
+	                Number old_val, Number new_val) {
+	            	
+	            	 model.setAnneeSelectionnee(new_val.intValue());
+	            	 txtFieldAnnee.setText(new_val.intValue()+"");
+	            	 afficherHistoQuadri();
+	            }
+	        });
+		    
+		    btnGraphe.setOnAction(new EventHandler<ActionEvent>() {
+		        @Override public void handle(ActionEvent e) {
+		        	afficherGraphe();
+		        }
+		    });
+	          
 	}
 	
     public static Point3D geoCoordTo3dCoord(double lat, double lon,float radius) {
@@ -270,7 +298,7 @@ public class Controller {
     }
     
     
-    public void addQuadrilateral(Group parent,Point3D topRight,Point3D bottomRight,Point3D topLeft,Point3D bottomLeft,PhongMaterial material,Position p) {
+    public MeshView addQuadrilateral(Group parent,Point3D topRight,Point3D bottomRight,Point3D topLeft,Point3D bottomLeft,PhongMaterial material,Position p) {
     	final TriangleMesh triangleMesh = new TriangleMesh();
     	
     	final float[] points = {
@@ -299,32 +327,40 @@ public class Controller {
     	MeshView meshView = new MeshView(triangleMesh);
     	meshView.setMaterial(material);
     	
-    	HashMap<Position,MeshView> meshs=model.getMeshs();
-    	meshs.put(p,meshView);
-    	
     	parent.getChildren().add(meshView);
-    	
+    	return meshView;
     }
     
     public void tracerQuadri() {
     	Annee annee=model.getAnneeSelectionnee();
     	if (annee!=null) {
-	        double pas=4;
-	        for (int i=-88;i<=90;i+=pas) {
-	        	for (int j=-178;j<=180;j+=pas) {
+	        double pas=2;
+	        for (int i=-88;i<=88;i+=4) {
+	        	for (int j=-178;j<=178;j+=4) {
 	        		Position p=new Position(i,j);       		
 	        		Float temp=annee.get(p);
 	        		if (temp!=null) {
-		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j,1.2f);
+		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j-pas,1.2f);
 		    	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,1.2f);
-		    	        Point3D botLeft=geoCoordTo3dCoord(i,j,1.2f);
-		    	        Point3D botRight=geoCoordTo3dCoord(i,j+pas,1.2f);
+		    	        Point3D botLeft=geoCoordTo3dCoord(i-pas,j-pas,1.2f);
+		    	        Point3D botRight=geoCoordTo3dCoord(i-pas,j+pas,1.2f);
 		    	        PhongMaterial pm=new PhongMaterial();
 		    	      	pm.setDiffuseColor(Color.GREY);
 			        	pm.setSpecularColor(Color.GREY);
 
 		    	        //pm.setSpecularColor(null);
-		    	        addQuadrilateral(quadri,topRight,botRight,topLeft,botLeft,pm,p);
+		    	        MeshView meshView=addQuadrilateral(quadri,topRight,botRight,topLeft,botLeft,pm,p);
+		    	        meshView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		    	    	    @Override
+		    	    	    public void handle(MouseEvent mouseEvent) {
+		    	    	        latLabel.setText(p.getLat()+"");
+		    	    	        lonLabel.setText(p.getLon()+"");
+		    	    	        zoneSelected();
+		    	    	        model.setSelecPos(p);
+		    	    	    }
+		    	    	});
+		    	        HashMap<Position,MeshView> meshs=model.getMeshs();
+		    	    	meshs.put(p,meshView);
 	        		}
 	        	}
 	        }
@@ -333,6 +369,14 @@ public class Controller {
     
     public void afficherQuadri() {
     	
+    	if (histoAffiche) {
+        	root3D.getChildren().remove(histo);
+        	root3D.getChildren().add(quadri);
+    	}else if(!quadriAffiche && !histoAffiche) {
+    		root3D.getChildren().add(quadri);
+    	}
+    	histoAffiche=false;
+    	quadriAffiche=true;
     	Annee annee=model.getAnneeSelectionnee();
     	float alpha=0.7f;
     	if (annee!=null) {
@@ -401,30 +445,61 @@ public class Controller {
         double angle = Math.acos(diff.normalize().dotProduct(yAxis));
         Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
 
-        Cylinder line = new Cylinder(0.01f, height);
+        int division=2;
+        Cylinder line = new Cylinder(0.01f, height,division);
 
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
         return line;
     }
     
+    public void tracerHisto() {
+    	Annee annee=model.getAnneeSelectionnee();
+    	if (annee!=null) {
+	        for (int i=-88;i<=88;i+=4) {
+	        	for (int j=-178;j<=178;j+=4) {
+	        		Position p=new Position(i,j);       		
+	        		Float temp=annee.get(p);
+	        		if (temp!=null) {
+	        			Point3D origin=geoCoordTo3dCoord(i,j,1);
+	        			Point3D target=geoCoordTo3dCoord(i,j,1.1f);
+	        			Cylinder cylinder=createLine(origin,target);
+		    	        PhongMaterial pm=new PhongMaterial();
+		    	      	pm.setDiffuseColor(Color.GREY);
+			        	pm.setSpecularColor(Color.GREY);
+			        	cylinder.setMaterial(pm);
+		    	        //pm.setSpecularColor(null);
+		    	        model.getHisto().put(p,cylinder);
+		    	        histo.getChildren().add(cylinder);
+	        		}
+	        	}
+	        }
+    	}
+    }
+    
 	 public void afficherHisto() {
-	    	histo=new Group();
+		 
+		 if (quadriAffiche) {
+	        	root3D.getChildren().remove(quadri);
+	        	root3D.getChildren().add(histo);
+	    	}else if(!histoAffiche && !quadriAffiche) {
+	    		root3D.getChildren().add(histo);
+	    	}
+		 histoAffiche=true;
+     	 quadriAffiche=false;
 	    	Annee annee=model.getAnneeSelectionnee();
 	    	float alpha=0.7f;
 	    	float minTemp=Math.abs(model.getMinTemp());
-	    	float taille=0;
+		    float taille=0;
+			float pasTaille=0.5f;
 	    	if (annee!=null) {
 		        for (Position p: annee.keySet()) {
-		        		if (annee.get(p)!=null) {
-		        			
-		        			Point3D origin=geoCoordTo3dCoord(p.getLat(),p.getLon(),1);
-		        			Point3D target=geoCoordTo3dCoord(p.getLat(),p.getLon(),taille);
-		        			
-			        		Cylinder cylinder=createLine(origin,target);
+		        		if (annee.get(p)!=null) {	
+			        		Cylinder cylinder=model.getHisto().get(p);
 			        		PhongMaterial pm=new PhongMaterial();
 			        		Float temp=annee.get(p);
-			        		taille=((minTemp+temp)/minTemp)+0.2f;
+			        		taille=((minTemp+temp)/minTemp)-pasTaille;
+			        		cylinder.setHeight(taille);
 			        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
 			    	        if (temp==Float.NaN) {
 				        	    pm.setDiffuseColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha));
@@ -464,13 +539,89 @@ public class Controller {
 			    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
 			        	    pm.setSpecularColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
 			        	    cylinder.setMaterial(pm);
-			        	    histo.getChildren().add(cylinder);
+			    
 		        		}
 		        	}
 		        }
-	    		root3D.getChildren().add(histo);
 	    	}
     
+	 
+	 public void afficherHistoQuadri() {
+		 if (btnRadioQuadri.isSelected()) {
+    		 afficherQuadri();
+    	 }
+    	  else if (btnRadioHisto.isSelected()) {
+    		  	afficherHisto();
+    	 }
+	 }
+	 
+	 
+	 public void setLatLonLabel() {
+	    	Annee annee=model.getAnneeSelectionnee();
+	    	if (annee!=null) {
+		        double pas=2;
+		        for (int i=-88;i<=88;i+=4) {
+		        	for (int j=-178;j<=178;j+=4) {
+		        		Position p=new Position(i,j);       		
+		        		Float temp=annee.get(p);
+		        		if (temp!=null) {
+			    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j-pas,1.01f);
+			    	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,1.01f);
+			    	        Point3D botLeft=geoCoordTo3dCoord(i-pas,j-pas,1.01f);
+			    	        Point3D botRight=geoCoordTo3dCoord(i-pas,j+pas,1.01f);
+			    	        PhongMaterial pm=new PhongMaterial();
+			    	      	pm.setDiffuseColor(Color.TRANSPARENT);
+				        	pm.setSpecularColor(Color.TRANSPARENT);
+
+			    	        //pm.setSpecularColor(null);
+			    	        MeshView meshView=addQuadrilateral(latLonLabel,topRight,botRight,topLeft,botLeft,pm,p);
+			    	        meshView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			    	    	    @Override
+			    	    	    public void handle(MouseEvent mouseEvent) {
+			    	    	        latLabel.setText(p.getLat()+"");
+			    	    	        lonLabel.setText(p.getLon()+"");
+			    	    	        zoneSelected();
+			    	    	        model.setSelecPos(p);
+			    	    	    }
+			    	    	});
+		        		}
+		        	}
+		        }
+	    	}
+	    	root3D.getChildren().add(latLonLabel);
+	    }
+	 
+	 public void afficherGraphe() {
+		 graphe.getData().removeAll(s);
+		 if (!grapheAffiche) {
+			 grapheAffiche=true;
+			 graphe.setVisible(true);
+		 }
+		 
+		 Position pos=model.getSelecPos();
+		 
+		 s = new Series();
+		 s.setName(pos.toString());
+		 LinkedHashMap<Integer, Annee> data = model.getData();
+		 
+		 if (pos!=null) {
+			 Float temp=0.0f;
+			 
+			 for(int annee: data.keySet()) {
+				 System.out.println(annee);
+				 temp=data.get(annee).get(pos);
+				 s.getData().add(new XYChart.Data<String,Float>(annee+"",temp)); 
+			 }
+			 graphe.layout();
+			 graphe.getData().add(s);
+			 
+		 }
+		 	
+	 }
+	 
+	 public void zoneSelected() {
+		 btnGraphe.setDisable(false);
+	 }
     /*
     public void displayTown(Group parent, String name, double lat, double lon) {
     	Sphere sphere=new Sphere(0.01);
