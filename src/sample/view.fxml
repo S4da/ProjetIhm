@@ -67,7 +67,7 @@
                             <CategoryAxis label="Annees" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis label="Temperatures" side="LEFT" />
+                            <NumberAxis autoRanging="false" label="Temperatures" lowerBound="-7.0" side="LEFT" upperBound="9.0" />
                           </yAxis>
                         </BarChart>
                      </children>

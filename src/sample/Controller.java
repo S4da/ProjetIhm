@@ -75,7 +75,7 @@ public class Controller {
     AnchorPane paneGraphe;
     
     @FXML
-    BarChart<String,Float> graphe;
+    BarChart<String,Number> graphe;
     
     @FXML
     TextField txtFieldAnnee;
@@ -139,7 +139,7 @@ public class Controller {
     boolean histoAffiche=false;
     boolean quadriAffiche=false;
     boolean grapheAffiche=false;
-    XYChart.Series s;
+    
     public void initFormatter() {
   	  filter = new UnaryOperator<TextFormatter.Change>() {
   	  @Override
@@ -199,6 +199,7 @@ public class Controller {
 	        histo=new Group();
 	        tracerQuadri();
 	        tracerHisto();
+	        
 	        //root3D.getChildren().add(quadri);
 	        
 	        SubScene subscene = new SubScene(root3D,600,600,true,SceneAntialiasing.BALANCED);
@@ -280,6 +281,7 @@ public class Controller {
 		    
 		    btnGraphe.setOnAction(new EventHandler<ActionEvent>() {
 		        @Override public void handle(ActionEvent e) {
+
 		        	afficherGraphe();
 		        }
 		    });
@@ -355,8 +357,11 @@ public class Controller {
 		    	    	    public void handle(MouseEvent mouseEvent) {
 		    	    	        latLabel.setText(p.getLat()+"");
 		    	    	        lonLabel.setText(p.getLon()+"");
+		    	    	        if (grapheAffiche) {
+		    	    	        	cacherGraphe();
+		    	    	        }
 		    	    	        zoneSelected();
-		    	    	        model.setSelecPos(p);
+		    	    	        model.setSelecPos(new Position(p.getLat(),p.getLon()));
 		    	    	    }
 		    	    	});
 		    	        HashMap<Position,MeshView> meshs=model.getMeshs();
@@ -580,8 +585,11 @@ public class Controller {
 			    	    	    public void handle(MouseEvent mouseEvent) {
 			    	    	        latLabel.setText(p.getLat()+"");
 			    	    	        lonLabel.setText(p.getLon()+"");
+			    	    	        if (grapheAffiche) {
+			    	    	        	cacherGraphe();
+			    	    	        }
 			    	    	        zoneSelected();
-			    	    	        model.setSelecPos(p);
+			    	    	        model.setSelecPos(new Position(p.getLat(),p.getLon()));
 			    	    	    }
 			    	    	});
 		        		}
@@ -592,7 +600,7 @@ public class Controller {
 	    }
 	 
 	 public void afficherGraphe() {
-		 graphe.getData().removeAll(s);
+		 graphe.getData().clear();
 		 if (!grapheAffiche) {
 			 grapheAffiche=true;
 			 graphe.setVisible(true);
@@ -600,20 +608,20 @@ public class Controller {
 		 
 		 Position pos=model.getSelecPos();
 		 
-		 s = new Series();
-		 s.setName(pos.toString());
+		 XYChart.Series<String, Number> series = new Series<>();
+		 series.setName(pos.toString());
 		 LinkedHashMap<Integer, Annee> data = model.getData();
 		 
 		 if (pos!=null) {
-			 Float temp=0.0f;
+			 Number temp=0.0f;
 			 
-			 for(int annee: data.keySet()) {
-				 System.out.println(annee);
+			 for(Integer annee: data.keySet()) {
 				 temp=data.get(annee).get(pos);
-				 s.getData().add(new XYChart.Data<String,Float>(annee+"",temp)); 
+				 System.out.println(annee.toString()+" "+temp);
+				 series.getData().add(new XYChart.Data<String,Number>(annee.toString(),temp)); 
 			 }
 			 graphe.layout();
-			 graphe.getData().add(s);
+			 graphe.getData().add(series);
 			 
 		 }
 		 	
@@ -621,6 +629,12 @@ public class Controller {
 	 
 	 public void zoneSelected() {
 		 btnGraphe.setDisable(false);
+	 }
+	 
+	 public void cacherGraphe() {
+		 graphe.setVisible(false);
+		 grapheAffiche=false;
+		 btnGraphe.setDisable(true);
 	 }
     /*
     public void displayTown(Group parent, String name, double lat, double lon) {
