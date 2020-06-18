@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -140,6 +141,11 @@ public class Controller {
     boolean quadriAffiche=false;
     boolean grapheAffiche=false;
     
+    // Animation
+    boolean animation=false;
+    AnimationTimer anim;
+    boolean pause=false;
+    
     public void initFormatter() {
   	  filter = new UnaryOperator<TextFormatter.Change>() {
   	  @Override
@@ -160,9 +166,11 @@ public class Controller {
 			txtFieldAnnee.setText((int)slidAnnee.getValue()+"");
 		    txtFieldAnnee.setTextFormatter(new TextFormatter(filter));
 		    btnGraphe.setDisable(true);
-		   graphe.setVisible(false);
-		   
-	          
+		    btnPause.setDisable(true);
+		    btnStop.setDisable(true);
+		    btnPlay.setDisable(true);
+		    graphe.setVisible(false);
+	        cmbVitesse.getItems().addAll(0.25f,0.5f,1.0f,1.5f,2.0f);
 			// tracer la terre de base
 			root3D = new Group();
 			latLonLabel=new Group();
@@ -208,6 +216,7 @@ public class Controller {
 	        paneEarth.getChildren().addAll(subscene);
 	
 		    
+	        
 		    ToggleGroup toggle=btnRadioQuadri.getToggleGroup();
 			
 			// on ajoute un listener pour tous les radioButton liés entre eux (tous)
@@ -216,6 +225,9 @@ public class Controller {
 	            public void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) 
 	            { 
 	                RadioButton rb = (RadioButton)toggle.getSelectedToggle(); 
+	                if (btnPlay.isDisable()) {
+	                	btnPlay.setDisable(false);
+	                }
 	                if (rb != null) { 
 	                    String s = rb.getText();
 	                    if (s.equals("Quadrilatere")) {
@@ -284,6 +296,61 @@ public class Controller {
 
 		        	afficherGraphe();
 		        }
+		    });
+		    
+		    btnPlay.setOnAction(new EventHandler<ActionEvent>() {
+		    	@Override public void handle(ActionEvent e) {
+		    		pause=false;
+		    		if (!animation) {
+		    			slidAnnee.setValue(1880);
+		    			anim=new AnimationTimer() {
+	    			    	final long startNanoTime = System.nanoTime();
+	    		        	public void handle(long currentNanoTime) {
+	    		        		slidAnnee.setValue(slidAnnee.getValue()+model.getAnimationVitesse()/2);
+	    		        		if (slidAnnee.getValue()>=2020) animStop();
+	    		        	}
+	    		        };
+		    			 
+		    			anim.start();
+		    			animation=true;
+		    			btnStop.setDisable(false);
+		    			btnPause.setDisable(false);
+		    		 }
+		    		 else {
+		    			 if (model.getAnimationVitesse()==0) {
+		    				 if (cmbVitesse.getValue() instanceof Float) {
+		    					model.setAnimationVitesse((float)cmbVitesse.getValue());
+		    				 }
+		    				 else model.setAnimationVitesse(1);
+		    			 }
+		    		 }
+		    	        
+		    	}
+		    });
+		    
+
+		    btnStop.setOnAction(new EventHandler<ActionEvent>() {
+		    	@Override public void handle(ActionEvent e) {
+		    		animStop();
+		    		slidAnnee.setValue(1880);
+		    	}
+		    });
+		    
+
+		    btnPause.setOnAction(new EventHandler<ActionEvent>() {
+		    	@Override public void handle(ActionEvent e) {
+		    		pause=true;
+		    		model.setAnimationVitesse(0f);
+		    	}
+		    });
+		    
+		    cmbVitesse.setOnAction(new EventHandler<ActionEvent>() {
+		    	@Override public void handle(ActionEvent e) {
+		    		
+		    		if (cmbVitesse.getValue() instanceof Float && !pause) {
+		    			 model.setAnimationVitesse((Float)cmbVitesse.getValue());
+		    		}
+		    	}
 		    });
 	          
 	}
@@ -637,6 +704,19 @@ public class Controller {
 		 grapheAffiche=false;
 		 btnGraphe.setDisable(true);
 	 }
+	 
+	 public void animStop() {
+		 animation=false;
+ 	    anim.stop();
+ 	    if ( model.getAnimationVitesse()==0) {
+				 if (cmbVitesse.getValue() instanceof Float) {
+					 model.setAnimationVitesse((float)cmbVitesse.getValue());
+				 }
+				 else  model.setAnimationVitesse(1);
+			 }
+	 }
+	 
+	 
     /*
     public void displayTown(Group parent, String name, double lat, double lon) {
     	Sphere sphere=new Sphere(0.01);

@@ -18,6 +18,8 @@ public class Model {
 	
 	int anneeSelectionnee=1880;
 	
+	float animationVitesse=1f;
+	
 	/** tests */
 	public int sampleNumber;
 	
@@ -102,6 +104,14 @@ public class Model {
 	}
 	public void setSelecPos(Position selecPos) {
 		this.selecPos = selecPos;
+	}
+	
+	public void setAnimationVitesse(float animationVitesse) {
+		this.animationVitesse = animationVitesse;
+	}
+	
+	public float getAnimationVitesse() {
+		return animationVitesse;
 	}
 
 	/** tests */

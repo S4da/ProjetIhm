@@ -64,10 +64,10 @@
                      <children>
                         <BarChart fx:id="graphe" prefHeight="292.0" prefWidth="340.0">
                           <xAxis>
-                            <CategoryAxis label="Annees" side="BOTTOM" />
+                            <CategoryAxis animated="false" label="Annees" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis autoRanging="false" label="Temperatures" lowerBound="-7.0" side="LEFT" upperBound="9.0" />
+                            <NumberAxis animated="false" autoRanging="false" label="Temperatures" lowerBound="-7.0" side="LEFT" upperBound="9.0" />
                           </yAxis>
                         </BarChart>
                      </children>
