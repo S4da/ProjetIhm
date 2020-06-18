@@ -151,7 +151,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Rectangle fx:id="color10_8" arcHeight="5.0" arcWidth="5.0" fill="MAROON" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
+                        <Rectangle fx:id="color10_8" arcHeight="5.0" arcWidth="5.0" fill="RED" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -161,7 +161,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Rectangle fx:id="color8_6" arcHeight="5.0" arcWidth="5.0" fill="RED" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
+                        <Rectangle fx:id="color8_6" arcHeight="5.0" arcWidth="5.0" fill="#ff4d00" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -171,7 +171,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Rectangle fx:id="color6_4" arcHeight="5.0" arcWidth="5.0" fill="#ff6600" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
+                        <Rectangle fx:id="color6_4" arcHeight="5.0" arcWidth="5.0" fill="#ff7700" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -181,7 +181,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Rectangle fx:id="color4_2" arcHeight="5.0" arcWidth="5.0" fill="#ff5050" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
+                        <Rectangle fx:id="color4_2" arcHeight="5.0" arcWidth="5.0" fill="#ffb000" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
@@ -191,7 +191,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Rectangle fx:id="color2_0" arcHeight="5.0" arcWidth="5.0" fill="#f89393" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
+                        <Rectangle fx:id="color2_0" arcHeight="5.0" arcWidth="5.0" fill="#eb8c79" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">

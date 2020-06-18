@@ -188,14 +188,6 @@ public class Controller {
 	        // Add a camera group
 	        PerspectiveCamera camera = new PerspectiveCamera(true);
 
-	        // Add point light
-	        PointLight light = new PointLight(Color.WHITE);
-	        light.setTranslateX(-180);
-	        light.setTranslateY(-90);
-	        light.setTranslateZ(-120);
-	        light.getScope().addAll(root3D);
-	        //root3D.getChildren().add(light);
-
 	        // Add ambient light
 	        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
 	        ambientLight.getScope().addAll(root3D);
@@ -247,22 +239,25 @@ public class Controller {
 	              public void handle(KeyEvent e) {
 	                  //TODO
 	            	  if (!e.getCode().equals(KeyCode.BACK_SPACE)) {
-		            	  int annee=0;
-		            	  try {
-		            		  annee= Integer.parseInt(txtFieldAnnee.getText());
-		            	  }catch(Exception er) {
-		            		  annee=1880;
-		            	  }
-		            	  if (annee<1880) {
-		            		  annee=1880;
-		            	  }
-		            	  else if(annee>2020) {
-		            		  annee=2020;
-		            	  }
-		            	  model.setAnneeSelectionnee(annee);
-		            	  slidAnnee.setValue(annee);
-		            	  txtFieldAnnee.end();
-		            	  afficherHistoQuadri();
+	            		  if (Integer.parseInt(txtFieldAnnee.getText())>=1880){
+			            	  int annee=0;
+			            	  try {
+			            		  annee= Integer.parseInt(txtFieldAnnee.getText());
+			            	  }catch(Exception er) {
+			            		  annee=1880;
+			            	  }
+			            	  
+			            	  if (annee<1880) {
+			            		  annee=1880;
+			            	  }
+			            	  else if(annee>2020) {
+			            		  annee=2020;
+			            	  }
+			            	  model.setAnneeSelectionnee(annee);
+			            	  slidAnnee.setValue(annee);
+			            	  txtFieldAnnee.end();
+			            	  afficherHistoQuadri();
+	            		  }
 	            	  }
 	              }
 	          });
