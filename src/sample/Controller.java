@@ -124,7 +124,10 @@ public class Controller {
     Rectangle color_minus6_8;
     
     @FXML
-    Rectangle color_minus8_10;
+    Label lblTempMax;
+    
+    @FXML
+    Label lblTempMin;
     
     @FXML
     Label latLabel;
@@ -162,6 +165,11 @@ public class Controller {
 	public void initialize() {
 		   
 			model=new Model();
+			float temp=0f;
+			temp=Math.round(model.getMinTemp()*100)/100.f;
+			lblTempMin.setText(temp+"");
+			temp=Math.round(model.getMaxTemp()*100)/100.f;
+			lblTempMax.setText(temp+"");
 			initFormatter();
 			txtFieldAnnee.setText((int)slidAnnee.getValue()+"");
 		    txtFieldAnnee.setTextFormatter(new TextFormatter(filter));
@@ -485,9 +493,6 @@ public class Controller {
 		    	        else if (temp>-8){
 		    	        	color=(Color)color_minus6_8.getFill();
 		    	        }
-		    	        else if (temp>-10){
-		    	        	color=(Color)color_minus8_10.getFill();
-		    	        }
 		    	    
 		    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
 		        	    pm.setSpecularColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));
@@ -599,9 +604,6 @@ public class Controller {
 			    	        }
 			    	        else if (temp>-8){
 			    	        	color=(Color)color_minus6_8.getFill();
-			    	        }
-			    	        else if (temp>-10){
-			    	        	color=(Color)color_minus8_10.getFill();
 			    	        }
 			    	    
 			    	        pm.setDiffuseColor(new Color(color.getRed(),color.getGreen(),color.getBlue(),alpha));

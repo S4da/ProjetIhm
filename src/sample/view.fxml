@@ -146,7 +146,7 @@
                         <Insets top="400.0" />
                      </VBox.margin>
                      <children>
-                        <Label prefHeight="9.0" prefWidth="27.0" text="10">
+                        <Label fx:id="lblTempMax" prefHeight="9.0" prefWidth="27.0" text="10">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -226,22 +226,12 @@
                   </HBox>
                   <HBox prefHeight="26.0" prefWidth="58.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="27.0" text="-8">
+                        <Label fx:id="lblTempMin" prefHeight="17.0" prefWidth="27.0" text="-8">
                            <HBox.margin>
                               <Insets top="9.0" />
                            </HBox.margin>
                         </Label>
                         <Rectangle fx:id="color_minus6_8" arcHeight="5.0" arcWidth="5.0" fill="#000099" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
-                     </children>
-                  </HBox>
-                  <HBox prefHeight="26.0" prefWidth="58.0">
-                     <children>
-                        <Label prefHeight="17.0" prefWidth="27.0" text="-10">
-                           <HBox.margin>
-                              <Insets top="9.0" />
-                           </HBox.margin>
-                        </Label>
-                        <Rectangle fx:id="color_minus8_10" arcHeight="5.0" arcWidth="5.0" fill="#000066" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" />
                      </children>
                   </HBox>
                </children>
