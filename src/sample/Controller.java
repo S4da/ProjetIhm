@@ -148,6 +148,7 @@ public class Controller {
     boolean animation=false;
     AnimationTimer anim;
     boolean pause=false;
+    int anneeAvantAnim;
     
     public void initFormatter() {
   	  filter = new UnaryOperator<TextFormatter.Change>() {
@@ -246,27 +247,22 @@ public class Controller {
 	              @Override
 	              public void handle(KeyEvent e) {
 	                  //TODO
-	            	  if (!e.getCode().equals(KeyCode.BACK_SPACE)) {
-	            		  if (Integer.parseInt(txtFieldAnnee.getText())>=1880){
-			            	  int annee=0;
-			            	  try {
-			            		  annee= Integer.parseInt(txtFieldAnnee.getText());
-			            	  }catch(Exception er) {
-			            		  annee=1880;
-			            	  }
-			            	  
-			            	  if (annee<1880) {
-			            		  annee=1880;
-			            	  }
-			            	  else if(annee>2020) {
-			            		  annee=2020;
-			            	  }
-			            	  model.setAnneeSelectionnee(annee);
-			            	  slidAnnee.setValue(annee);
-			            	  txtFieldAnnee.end();
-			            	  afficherHistoQuadri();
-	            		  }
+	            	  int anneeEntree=0;
+	            	  try {
+	            		  anneeEntree=Integer.parseInt(txtFieldAnnee.getText());
+	            	  }catch(Exception exep) {
+	            		  
 	            	  }
+            		  if (anneeEntree>=1880){
+		            	  	            	  
+		            	  if(anneeEntree>2020) {
+		            		  anneeEntree=2020;
+		            	  }
+		            	  model.setAnneeSelectionnee(anneeEntree);
+		            	  slidAnnee.setValue(anneeEntree);
+		            	  txtFieldAnnee.end();
+		            	  afficherHistoQuadri();
+            		  }	  
 	              }
 	          });
 		   
@@ -305,6 +301,7 @@ public class Controller {
 		    	@Override public void handle(ActionEvent e) {
 		    		pause=false;
 		    		if (!animation) {
+		    			anneeAvantAnim=model.getAnneeEnCours();
 		    			slidAnnee.setValue(1880);
 		    			anim=new AnimationTimer() {
 	    			    	final long startNanoTime = System.nanoTime();
@@ -335,7 +332,7 @@ public class Controller {
 		    btnStop.setOnAction(new EventHandler<ActionEvent>() {
 		    	@Override public void handle(ActionEvent e) {
 		    		animStop();
-		    		slidAnnee.setValue(1880);
+		    		slidAnnee.setValue(anneeAvantAnim);
 		    	}
 		    });
 		    
@@ -462,11 +459,7 @@ public class Controller {
 		        		PhongMaterial pm=new PhongMaterial();
 		        		Float temp=annee.get(p);
 		        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
-		    	        if (temp==Float.NaN) {
-			        	    pm.setDiffuseColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha));
-			        	    pm.setSpecularColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha)); 
-		    	        }
-		    	        else if (temp>8){
+		        		if (temp>8){
 		    	        	color=(Color)color10_8.getFill();
 		    	        }
 		    	        else if (temp>6){
@@ -517,8 +510,7 @@ public class Controller {
         double angle = Math.acos(diff.normalize().dotProduct(yAxis));
         Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
 
-        int division=2;
-        Cylinder line = new Cylinder(0.01f, height,division);
+        Cylinder line = new Cylinder(0.01f, height);
 
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
@@ -574,11 +566,8 @@ public class Controller {
 			        		taille=(float) Math.round(taille * 100) / 100;
 			        		cylinder.setHeight(taille);
 			        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
-			    	        if (temp==Float.NaN) {
-				        	    pm.setDiffuseColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha));
-				        	    pm.setSpecularColor(new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha)); 
-			    	        }
-			    	        else if (temp>8){
+			    	     
+			    	        if (temp>8){
 			    	        	color=(Color)color10_8.getFill();
 			    	        }
 			    	        else if (temp>6){
@@ -682,10 +671,8 @@ public class Controller {
 			 
 			 for(Integer annee: data.keySet()) {
 				 temp=data.get(annee).get(pos);
-				 System.out.println(annee.toString()+" "+temp);
 				 series.getData().add(new XYChart.Data<String,Number>(annee.toString(),temp)); 
 			 }
-			 graphe.layout();
 			 graphe.getData().add(series);
 			 
 		 }
@@ -703,6 +690,8 @@ public class Controller {
 	 }
 	 
 	 public void animStop() {
+		 btnPause.setDisable(true);
+		 btnStop.setDisable(true);
 		 animation=false;
  	    anim.stop();
  	    if ( model.getAnimationVitesse()==0) {
