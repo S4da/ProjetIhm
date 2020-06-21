@@ -119,4 +119,8 @@ public class Model {
 		FileReader.getDataFromCSVFile("src/donnees/tempanomaly_4x4grid.csv", data);
 	}
 	
+	public float getTemp(Position p) {
+		return data.get(anneeSelectionnee).get(p);
+	}
+	
 }

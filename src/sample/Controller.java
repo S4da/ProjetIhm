@@ -29,6 +29,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -135,6 +136,12 @@ public class Controller {
     @FXML
     Label lonLabel;
     
+    @FXML
+    Label tempLabel;
+    
+    @FXML
+    CheckBox chkTempNeg;
+    
     Group quadri;
     Group histo;
     Group root3D;
@@ -143,6 +150,7 @@ public class Controller {
     boolean histoAffiche=false;
     boolean quadriAffiche=false;
     boolean grapheAffiche=false;
+    Sphere sphere;
     
     // Animation
     boolean animation=false;
@@ -166,6 +174,7 @@ public class Controller {
 	public void initialize() {
 		   
 			model=new Model();
+			chkTempNeg.setDisable(true);
 			float temp=0f;
 			temp=Math.round(model.getMinTemp()*100)/100.f;
 			lblTempMin.setText(temp+"");
@@ -233,10 +242,15 @@ public class Controller {
 	                    String s = rb.getText();
 	                    if (s.equals("Quadrilatere")) {
 	                    	afficherQuadri();
+	                    	chkTempNeg.setDisable(true);
+	                    	if (sphere!=null) {
+	                    		displayPointQuadri(model.getSelecPos().getLat(),model.getSelecPos().getLon());
+	                    	}
 	                    }
 	                    else if (s.equals("Histogramme")) {
 	                    	afficherHisto();
-	                    	
+	                    	chkTempNeg.setDisable(false);
+	                    	displayPoint(model.getSelecPos().getLat(),model.getSelecPos().getLon());
 	                    }
 	                } 
 	            } 
@@ -304,7 +318,6 @@ public class Controller {
 		    			anneeAvantAnim=model.getAnneeEnCours();
 		    			slidAnnee.setValue(1880);
 		    			anim=new AnimationTimer() {
-	    			    	final long startNanoTime = System.nanoTime();
 	    		        	public void handle(long currentNanoTime) {
 	    		        		slidAnnee.setValue(slidAnnee.getValue()+model.getAnimationVitesse()/2);
 	    		        		if (slidAnnee.getValue()>=2020) animStop();
@@ -350,6 +363,12 @@ public class Controller {
 		    		if (cmbVitesse.getValue() instanceof Float && !pause) {
 		    			 model.setAnimationVitesse((Float)cmbVitesse.getValue());
 		    		}
+		    	}
+		    });
+		    
+		    chkTempNeg.setOnAction(new EventHandler<ActionEvent>() {
+		    	@Override public void handle(ActionEvent e) {
+		    		afficherHisto();
 		    	}
 		    });
 	          
@@ -402,6 +421,7 @@ public class Controller {
     
     public void tracerQuadri() {
     	Annee annee=model.getAnneeSelectionnee();
+    	float height=1.2f;
     	if (annee!=null) {
 	        double pas=2;
 	        for (int i=-88;i<=88;i+=4) {
@@ -409,10 +429,10 @@ public class Controller {
 	        		Position p=new Position(i,j);       		
 	        		Float temp=annee.get(p);
 	        		if (temp!=null) {
-		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j-pas,1.2f);
-		    	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,1.2f);
-		    	        Point3D botLeft=geoCoordTo3dCoord(i-pas,j-pas,1.2f);
-		    	        Point3D botRight=geoCoordTo3dCoord(i-pas,j+pas,1.2f);
+		    		 	Point3D topLeft=geoCoordTo3dCoord(i+pas,j-pas,height);
+		    	        Point3D topRight=geoCoordTo3dCoord(i+pas,j+pas,height);
+		    	        Point3D botLeft=geoCoordTo3dCoord(i-pas,j-pas,height);
+		    	        Point3D botRight=geoCoordTo3dCoord(i-pas,j+pas,height);
 		    	        PhongMaterial pm=new PhongMaterial();
 		    	      	pm.setDiffuseColor(Color.GREY);
 			        	pm.setSpecularColor(Color.GREY);
@@ -424,6 +444,8 @@ public class Controller {
 		    	    	    public void handle(MouseEvent mouseEvent) {
 		    	    	        latLabel.setText(p.getLat()+"");
 		    	    	        lonLabel.setText(p.getLon()+"");
+		    	    	        tempLabel.setText(model.getTemp(p)+"");
+		    	    	        displayPointQuadri(p.getLat(),p.getLon());
 		    	    	        if (grapheAffiche) {
 		    	    	        	cacherGraphe();
 		    	    	        }
@@ -450,7 +472,7 @@ public class Controller {
     	histoAffiche=false;
     	quadriAffiche=true;
     	Annee annee=model.getAnneeSelectionnee();
-    	float alpha=0.7f;
+    	float alpha=0.65f;
     	if (annee!=null) {
 	        for (Position p: annee.keySet()) {
 	        		if (annee.get(p)!=null) {
@@ -562,8 +584,12 @@ public class Controller {
 			        		Cylinder cylinder=model.getHisto().get(p);
 			        		PhongMaterial pm=new PhongMaterial();
 			        		Float temp=annee.get(p);
-			        		taille=((minTemp+temp)/minTemp)-pasTaille;
-			        		taille=(float) Math.round(taille * 100) / 100;
+			        		if (chkTempNeg.isSelected() && temp<=0) {
+			        			taille=0;
+			        		}else {
+				        		taille=((minTemp+temp)/minTemp)-pasTaille;
+				        		taille=(float) Math.round(taille * 100) / 100;
+			        		}
 			        		cylinder.setHeight(taille);
 			        		Color color=new Color(Color.GREY.getRed(),Color.GREY.getGreen(),Color.GREY.getBlue(),alpha);
 			    	     
@@ -639,6 +665,8 @@ public class Controller {
 			    	    	    public void handle(MouseEvent mouseEvent) {
 			    	    	        latLabel.setText(p.getLat()+"");
 			    	    	        lonLabel.setText(p.getLon()+"");
+			    	    	        tempLabel.setText(model.getTemp(p)+"");
+			    	    	        displayPoint(p.getLat(),p.getLon());
 			    	    	        if (grapheAffiche) {
 			    	    	        	cacherGraphe();
 			    	    	        }
@@ -700,23 +728,40 @@ public class Controller {
 				 }
 				 else  model.setAnimationVitesse(1);
 			 }
-	 }
+	 }  
 	 
-	 
-    /*
-    public void displayTown(Group parent, String name, double lat, double lon) {
-    	Sphere sphere=new Sphere(0.01);
-    	sphere.setId(name);
-    	Point3D p=geoCoordTo3dCoord(lat,lon,1);
-    	PhongMaterial pm=new PhongMaterial();
-    	pm.setDiffuseColor(Color.LIME);
-    	pm.setSpecularColor(Color.LIME);
-    	sphere.setMaterial(pm);
-    	sphere.setTranslateX(p.getX());
-    	sphere.setTranslateY(p.getY());
-    	sphere.setTranslateZ(p.getZ());
-    	parent.getChildren().add(sphere);
-    		
-    }*/
-    
+	 public void displayPoint(double lat, double lon) {
+		 	if (sphere!=null) {
+		 		root3D.getChildren().remove(sphere);
+		 		quadri.getChildren().remove(sphere);
+		 	}
+		 	sphere=new Sphere(0.03);
+	    	Point3D p=geoCoordTo3dCoord(lat,lon,1);
+	    	PhongMaterial pm=new PhongMaterial();
+	    	pm.setDiffuseColor(Color.LIME);
+	    	pm.setSpecularColor(Color.LIME);
+	    	sphere.setMaterial(pm);
+	    	sphere.setTranslateX(p.getX());
+	    	sphere.setTranslateY(p.getY());
+	    	sphere.setTranslateZ(p.getZ());
+	    	root3D.getChildren().add(sphere);
+	    		
+	    }
+	 public void displayPointQuadri(float lat, float lon) {
+		 	if (sphere!=null) {
+		 		quadri.getChildren().remove(sphere);
+		 		root3D.getChildren().remove(sphere);
+		 	}
+		 	sphere=new Sphere(0.03);
+	    	Point3D p=geoCoordTo3dCoord(lat,lon,1.2f);
+	    	PhongMaterial pm=new PhongMaterial();
+	    	pm.setDiffuseColor(Color.LIME);
+	    	pm.setSpecularColor(Color.LIME);
+	    	sphere.setMaterial(pm);
+	    	sphere.setTranslateX(p.getX());
+	    	sphere.setTranslateY(p.getY());
+	    	sphere.setTranslateZ(p.getZ());
+	    	quadri.getChildren().add(sphere);
+	    		
+	    }
 }

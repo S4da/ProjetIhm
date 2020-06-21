@@ -92,10 +92,10 @@ public class CameraManager {
                 if (me.isPrimaryButtonDown()) {
                     ry.setAngle(ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED);
                     rx.setAngle(rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED);
-                } else if (me.isSecondaryButtonDown()) {
+                }/* else if (me.isSecondaryButtonDown()) {
                     cameraXform2.setTranslateX(cameraXform2.getTranslateX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
                     cameraXform2.setTranslateY(cameraXform2.getTranslateY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
-                }
+                }*/
             }
         });
         /*
